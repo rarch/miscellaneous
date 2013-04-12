@@ -140,6 +140,9 @@ def main():
 if __name__ =='__main__':
     main()
 
+####################################################
+# strategy (should be no-lose)
+
 # go first: choose corner
 #     if they choose side next to you
 #         choose other side next to you
@@ -157,6 +160,23 @@ if __name__ =='__main__':
 #         play a corner square
 #         if the next move does not threaten a win
 #             play a corner squre
+
+# if opponent threatens win:
+#     prevent win
+# if you can win:
+#     do it
+
+# threaten win:
+# any two in column or row with third in that column or row empty
+#     with [x,y] either x or y is constant for these 3 squares
+# opposite corners with middle empty or corner and middle with opposite corner empty
+#     [0,2] and [2,0] or [0,0] and [2,2] with [1,1] empty, or
+#     [1,1] with [0,2] -> [2,0] empty, or
+#     [1,1] with [2,0] -> [0,2] empty, or
+#     [1,1] with [2,2] -> [0,0] empty, or
+#     [1,1] with [0,0] -> [2,2] empty
+
+####################################################
 
 # need to have array of empty squares
 # corners [0,2],[2,0],[0,0],[2,2]
