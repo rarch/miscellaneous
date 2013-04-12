@@ -111,7 +111,6 @@ class Game:
             except ValueError:
                 exit('Pass valid int')
             val = self.myboard.getVal(i)
-            print val
 
         self.myboard.setSquare(i,self.players[self.moves%PLAYERS].mychar)
         self.lastmove = [(i-1)/SIZE,(i-1)%SIZE]
@@ -126,6 +125,7 @@ class Player:
         self.promptName()
     def promptName(self):
         self.myname = raw_input('Enter name for Player '+str(self.mychar)+': ')
+    # def move(self):
 
 def main():
     tictactoe = Game()
@@ -139,3 +139,30 @@ def main():
 
 if __name__ =='__main__':
     main()
+
+# go first: choose corner
+#     if they choose side next to you
+#         choose other side next to you
+#     if they choose corner next to you
+#         choose opposite corner
+#     if they choose opposite side
+#         choose adjacent corner
+#     if they choose middle
+#         choose opposite corner
+
+# go second:
+#     if they choose corner
+#         choose middle
+#     if they choose middle
+#         play a corner square
+#         if the next move does not threaten a win
+#             play a corner squre
+
+# need to have array of empty squares
+# corners [0,2],[2,0],[0,0],[2,2]
+# center [1,1]
+# sides [0,1],[1,0],[1,2],[2,1]
+
+# need to define move() for player
+#     if name startswith Computer
+#          or startswith computer
