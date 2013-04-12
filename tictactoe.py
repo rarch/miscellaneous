@@ -127,6 +127,10 @@ class Player:
         self.myname = raw_input('Enter name for Player '+str(self.mychar)+': ')
     # def move(self):
 
+# class ComputerPlayer(Player):
+#     def __init__(self, *args, **kwargs):
+#         super(self.__class__, self).__init__(*args, **kwargs)
+
 def main():
     tictactoe = Game()
 
@@ -182,6 +186,8 @@ if __name__ =='__main__':
 # corners [0,2],[2,0],[0,0],[2,2]
 # center [1,1]
 # sides [0,1],[1,0],[1,2],[2,1]
+
+# prompt for name before init of player -> decided on type of player based on name
 
 # need to define move() for player
 #     if name startswith Computer
