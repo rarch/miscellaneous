@@ -12,4 +12,5 @@ def FizzBuzz(lo, hi):
         print out if out else i
 
 if __name__ == "__main__":
+    # FizzBuzz(1,100)
     FizzBuzz_list(1,100) # choose 1, 100
