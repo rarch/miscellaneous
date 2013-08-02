@@ -25,7 +25,7 @@ class Player:
     def getMove(self,maxval):
         #ask player where to move
         try:
-            return int(raw_input(str(self.myname)+', move where (enter number 1-'+str(maxval)+')?: '))
+            return int(raw_input(str(self.myname)+', move where? (enter number 1-'+str(maxval)+', unoccupied): '))
         except ValueError:
             return 0
 
@@ -44,8 +44,17 @@ class Board:
     def __str__(self):
         empty,pretty='.', lambda val: val if val else empty # print contents of square or empty
         # new line before board. new line after each horizontal row. grid lines corresponding to num of squares. bars between columns
+        rowslist=[]
+        for r in xrange(0,self.dim):
+            start=r*self.dim+1
+            rowslist.append(' | '.join(map(pretty,self.board[r]))+\
+                '\t('+') ('.join(map(str,[c for c in xrange(start,start+self.dim)]))+')')
+        return ('\n'+('-+-'.join('-' for col in self.board[0]))+'\n').join(rowslist)
+
+    def simpleboard(self):
+        empty,pretty='.', lambda val: val if val else empty
         return ('\n'+('-+-'.join('-' for col in self.board[0]))+'\n').join(' | '.join(map(pretty,row)) for row in self.board)
-        # return ''.join(''.join(map(pretty,row)) for row in self.board)
+
     def setSquare(self,i_plus_one,v):
         #set value in 1..dim^2
         coords=self.getCoords(i_plus_one)
@@ -120,7 +129,7 @@ def play():
         tictactoe.announce()
         tictactoe.play_turn()
 
-    print 'Board:\n',str(tictactoe.board)
+    print 'Board:\n',str(tictactoe.board.simpleboard())
     tictactoe.announce_winner()
 
 if __name__ =='__main__':
