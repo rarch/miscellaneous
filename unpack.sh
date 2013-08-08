@@ -6,33 +6,34 @@
 # usage: unpack.sh directory "ext" [ "ext" ... ]
 
 if [ $# -lt 1 ]; then
-    echo "usage: unpack.sh  \"DIRECTORY\" [ \"DIRECTORY\" ... ]"
+    echo "usage: unpack.sh  directory [ directory ... ]"
     echo " eg. $ unpack.sh /path/to/dir /path/to/second/dir"
     exit 1    
 fi
 
-for DIRNAME in $@
+directories=( $@ )
+COUNTER=0
+
+for dir in "${directories[@]}"
 do
-    # check for valid directory
-    if [ -d "${DIRNAME}" ];
-    then
-        for FILE in `ls $DIRNAME`
+    if [ -d "${dir}" ]; then
+        dirname=$(basename "$dir")
+        for file in $dir/*
         do
-            # file name matches directory name, so remove file
-            if [[ "${FILE%%.*}" == `basename $DIRNAME` ]]; then
-                mv "${DIRNAME}/${FILE}" "${DIRNAME}/../${FILE}" 
+            filename=$(basename "$file")
+            filename="${filename%.*}"
+            if [ "$filename" = "$dirname" ]; then
+                mv $file $dir/..
             fi
         done
 
-        # if directory is empty, delete it
-        if [ ! "$(ls -A $DIRNAME)" ]; then
-            rmdir $DIRNAME
+        if [ ! "$(ls -A $dir)" ]; then
+            rmdir $dir
         fi
-
     else
-        echo invalid directory ${DIRNAME}
-    fi 
-
+        echo invalid directory $dir
+        COUNTER=$[$COUNTER +1]
+    fi
 done
 
-exit 0
+exit $COUNTER

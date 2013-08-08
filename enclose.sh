@@ -1,27 +1,32 @@
 #!/bin/bash
 
 # a short script that puts all files of specified types in a specified directory into subdirectories with the name of that file
-# usage: enclose.sh directory "ext" [ "ext" ... ]
+# usage: enclose.sh directory ext [ ext ... ]
 
 if [ $# -lt 2 ]; then
-    echo "usage: enclose.sh DIRNAME \"EXTENSION\" [ \"EXTENSION\" ... ]"
+    echo "usage: enclose.sh directory extension [ extension ... ]"
     echo " eg. $ enclose.sh /path/to/dir txt py"
     exit 1    
 fi
 
-DIRNAME="$1"
+dir="$1"
 shift
+extensions=( $@ )
 
-for EXTENSION in $@
+for file in $dir/*
 do
-    for FILE in `ls $DIRNAME`
+
+    for i in "${extensions[@]}"
     do
-        # echo $FILE
-        if [[ "${FILE##*.}" == "${EXTENSION}" ]]; then
-            if [ ! -d "${DIRNAME}/${FILE%%.*}" ]; then
-                mkdir "${DIRNAME}/${FILE%%.*}"
+        filename=$(basename "$file")
+        ext="${filename##*.}"
+        filename="${filename%.*}"
+        if [ "$i" = $ext ] ; then
+            # echo "$filename"
+            if [ ! -d "${dir}/${filename%.*}" ]; then
+                mkdir "${dir}/${filename%.*}"
             fi
-            mv "${DIRNAME}/${FILE}" "${DIRNAME}/${FILE%%.*}"
+            mv $file "${dir}/${filename%.*}"
         fi
     done
 done
