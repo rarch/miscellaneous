@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-#refactored version of tictactoe.py
-
 class Player:
     def __init__(self,c):
         self.mychar = c
@@ -25,7 +23,7 @@ class Player:
     def getMove(self,maxval):
         #ask player where to move
         try:
-            return int(raw_input(str(self.myname)+', move where? (enter number 1-'+str(maxval)+', unoccupied): '))
+            return int(raw_input(str(self.myname)+' ('+self.mychar+'), move where? (enter number 1-'+str(maxval)+', unoccupied): '))
         except ValueError:
             return 0
 
@@ -40,6 +38,8 @@ class Board:
                 newR.append(None)
             self.board.append(newR)
             newR=[]
+
+        self.empties = dim**2
 
     def __str__(self):
         empty,pretty='.', lambda val: val if val else empty # print contents of square or empty
@@ -59,7 +59,10 @@ class Board:
         #set value in 1..dim^2
         coords=self.getCoords(i_plus_one)
         self.board[coords[0]][coords[1]] = v
+        self.empties-=1
         return coords
+    def isfull(self):
+        return self.empties==0
     def getVal(self,i_plus_one):
         # get value in square 1..dim^2
         coords=self.getCoords(i_plus_one)
@@ -88,7 +91,7 @@ class Game:
     def announce_winner(self):
         # check number of moves versus number of players, and announce
         print str(self.players[(self.moves-1)%len(self.players)].myname),'wins!'
-    def is_over(self):
+    def is_won(self):
         # tests each turn to see whether the game has finished
         if self.lastmove: # if game has started
             # single=lambda l: 1==len(l)
@@ -125,12 +128,16 @@ class Game:
 def play():
     tictactoe = Game(['X','O'],3)
 
-    while (not tictactoe.is_over()):
+    while (not tictactoe.is_won() and not tictactoe.board.isfull()):
         tictactoe.announce()
         tictactoe.play_turn()
 
     print 'Board:\n',str(tictactoe.board.simpleboard())
-    tictactoe.announce_winner()
+
+    if tictactoe.is_won():
+        tictactoe.announce_winner()
+    else:
+        print "Game is a draw!"
 
 if __name__ =='__main__':
     play()
