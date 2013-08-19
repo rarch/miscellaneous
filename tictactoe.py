@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import random
 
 class Player:
     def __init__(self,c):
@@ -20,12 +21,24 @@ class Player:
     def getC(self):
         # give character of player
         return self.mychar
-    def getMove(self,maxval):
+    def getMove(self,board):
         #ask player where to move
         try:
-            return int(raw_input(str(self.myname)+' ('+self.mychar+'), move where? (enter number 1-'+str(maxval)+', unoccupied): '))
+            return int(raw_input(str(self.myname)+' ('+self.mychar+\
+                '), move where? (enter number 1-'+str(board.dim**2)+', unoccupied): '))
         except ValueError:
             return 0
+
+# class Human(Player):
+#     def getMove(self,board):
+#         try:
+#             return int(raw_input(str(self.myname)+' ('+self.mychar+\
+#                 '), move where? (enter number 1-'+str(board.dim**2)+', unoccupied): '))
+#         except ValueError:
+#             return 0
+
+# class Computer(Player):
+#     def getMove(self,board):
 
 class Board:
     def __init__(self, dim):
@@ -38,8 +51,6 @@ class Board:
                 newR.append(None)
             self.board.append(newR)
             newR=[]
-
-        self.empties = dim**2
 
     def __str__(self):
         empty,pretty='.', lambda val: val if val else empty # print contents of square or empty
@@ -59,10 +70,7 @@ class Board:
         #set value in 1..dim^2
         coords=self.getCoords(i_plus_one)
         self.board[coords[0]][coords[1]] = v
-        self.empties-=1
         return coords
-    def isfull(self):
-        return self.empties==0
     def getVal(self,i_plus_one):
         # get value in square 1..dim^2
         coords=self.getCoords(i_plus_one)
@@ -83,10 +91,14 @@ class Game:
     def __init__(self,players,dim):
         self.board,self.players=Board(dim),map((Player),players) # create board and players
         self.moves,self.lastmove=0,None # no moves yet
-        print '\nPlayers:',', '.join(map((lambda p: str(p.myname)),self.players)),'\n'
+        print '\nPlayers:',', '.join(map((lambda p: str(p.myname)),self.players))
+        
+        self.offset = random.randint(0,1)
+        print self.players[self.offset].myname+"goes first!\n"
+
     def announce(self):
         # get player name, print board
-        print str(self.players[self.moves%len(self.players)].myname),'to move'
+        print str(self.players[(self.moves+self.offset)%len(self.players)].myname),'to move'
         print 'Board:\n',str(self.board),'\n'
     def announce_winner(self):
         # check number of moves versus number of players, and announce
@@ -110,16 +122,18 @@ class Game:
                 return single(self.board.getD(1))
 
         return False
+    def is_over(self):
+        return self.moves==self.board.dim**2
     def play_turn(self):
         # get player, have player move, set square
-        p=self.players[self.moves%len(self.players)]
+        p=self.players[(self.moves+self.offset)%len(self.players)]
         maxval=self.board.getDim()**2
 
         val=True
         while (val):
             i=0 #check for valid range 1..dim^2
             while (i not in xrange(1,maxval+1)):
-                i=p.getMove(maxval)
+                i=p.getMove(self.board)
             val=self.board.getVal(i)
 
         self.lastmove=self.board.setSquare(i,p.getC())
@@ -128,7 +142,7 @@ class Game:
 def play():
     tictactoe = Game(['X','O'],3)
 
-    while (not tictactoe.is_won() and not tictactoe.board.isfull()):
+    while (not tictactoe.is_won() and not tictactoe.is_over()):
         tictactoe.announce()
         tictactoe.play_turn()
 
