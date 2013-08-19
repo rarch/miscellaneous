@@ -30,8 +30,10 @@ def main():
     while playing:
         print "\nWord is:", obscured.tostring()
         print "Lives remaining:", lives
-        guess = raw_input("Enter guess:") # get input
-        guess = guess.replace("\n", "") #remove carriage returns
+        guess = raw_input("Enter guess: ").replace("\n", "") #get guess
+
+        while len(guess) != 1: #error checking
+            guess = raw_input(">>> Enter guess (1 char): ").replace("\n", "")
 
         if guess not in done: #check for already guessed
             if guess in word: #check if char is present
@@ -43,7 +45,7 @@ def main():
                    i+=1
 
                 if "-" not in obscured.tostring():
-                    print "You guessed the word:", word, ". Lives remaining:", lives
+                    print "You guessed the word: %s. Lives remaining: %d"%(word,lives)
                     playing=False #on solve
 
             elif guess not in word:
