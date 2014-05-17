@@ -18,6 +18,8 @@ class Player:
             name = raw_input(prompt)
             if name.isalnum():
                 self.myname=name
+            # set human player for player not called computer
+            # set computer player for player called computer
     def getC(self):
         # give character of player
         return self.mychar
@@ -25,20 +27,23 @@ class Player:
         #ask player where to move
         try:
             return int(raw_input(str(self.myname)+' ('+self.mychar+\
-                '), move where? (enter number 1-'+str(board.dim**2)+', unoccupied): '))
+                '), move where? (enter number 1-'+str(board.getDim()**2)+', unoccupied): '))
         except ValueError:
             return 0
 
-# class Human(Player):
-#     def getMove(self,board):
-#         try:
-#             return int(raw_input(str(self.myname)+' ('+self.mychar+\
-#                 '), move where? (enter number 1-'+str(board.dim**2)+', unoccupied): '))
-#         except ValueError:
-#             return 0
+class Human(Player):
+    def getMove(self,board):
+        try:
+            return int(raw_input(str(self.myname)+' ('+self.mychar+\
+                '), move where? (enter number 1-'+str(board.getDim()**2)+', unoccupied): '))
+        except ValueError:
+            return 0
 
+# computer is the same as human player, but just rewrite the getMove function
+# board.board=[[a,b,c],[d,e,f],[g,h,i]] where each letter can be 'O', 'X', or None; columns within rows
 # class Computer(Player):
 #     def getMove(self,board):
+
 
 class Board:
     def __init__(self, dim):
@@ -53,18 +58,22 @@ class Board:
             newR=[]
 
     def __str__(self):
-        empty,pretty='.', lambda val: val if val else empty # print contents of square or empty
+        # empty,pretty='.', lambda val: val if val else empty # print contents of square or empty
         # new line before board. new line after each horizontal row. grid lines corresponding to num of squares. bars between columns
         rowslist=[]
         for r in xrange(0,self.dim):
             start=r*self.dim+1
-            rowslist.append(' | '.join(map(pretty,self.board[r]))+\
+            rowslist.append(' | '.join(map(self._charify,self.board[r]))+\
                 '\t('+') ('.join(map(str,[c for c in xrange(start,start+self.dim)]))+')')
         return ('\n'+('-+-'.join('-' for col in self.board[0]))+'\n').join(rowslist)
 
+    # helper function
+    def _charify(self,val):
+        return str(val) if val else '.'
+
     def simpleboard(self):
-        empty,pretty='.', lambda val: val if val else empty
-        return ('\n'+('-+-'.join('-' for col in self.board[0]))+'\n').join(' | '.join(map(pretty,row)) for row in self.board)
+        # empty,pretty='.', lambda val: val if val else empty
+        return ('\n'+('-+-'.join('-' for col in self.board[0]))+'\n').join(' | '.join(map(self._charify,row)) for row in self.board)
 
     def setSquare(self,i_plus_one,v):
         #set value in 1..dim^2
@@ -86,15 +95,20 @@ class Board:
         return self.dim # return the dimension
     def getCoords(self,i_plus_one):
         return [(i_plus_one-1)/self.dim,(i_plus_one-1)%self.dim] # get r and c coordinates
+    def simpleStr(self):
+        # charify=lambda val: str(val) if val else '.'
+        return ''.join(self._charify(c) for r in self.board for c in r)
+
 
 class Game:
     def __init__(self,players,dim):
-        self.board,self.players=Board(dim),map((Player),players) # create board and players
+        # self.board,self.players=Board(dim),map((Player),players) # create board and players
+        self.board,self.players=Board(dim),map((Human),players)
         self.moves,self.lastmove=0,None # no moves yet
         print '\nPlayers:',', '.join(map((lambda p: str(p.myname)),self.players))
         
         self.offset = random.randint(0,1)
-        print self.players[self.offset].myname+"goes first!\n"
+        print self.players[self.offset].myname,"goes first!\n"
 
     def announce(self):
         # get player name, print board
@@ -102,7 +116,8 @@ class Game:
         print 'Board:\n',str(self.board),'\n'
     def announce_winner(self):
         # check number of moves versus number of players, and announce
-        print str(self.players[(self.moves-1)%len(self.players)].myname),'wins!'
+        print str(self.players[(self.moves)%len(self.players)].myname)\
+        +' ('+self.players[(self.moves)%len(self.players)].mychar+') '+'wins!'
     def is_won(self):
         # tests each turn to see whether the game has finished
         if self.lastmove: # if game has started
@@ -123,7 +138,7 @@ class Game:
 
         return False
     def is_over(self):
-        return self.moves==self.board.dim**2
+        return self.moves==self.board.getDim()**2
     def play_turn(self):
         # get player, have player move, set square
         p=self.players[(self.moves+self.offset)%len(self.players)]
