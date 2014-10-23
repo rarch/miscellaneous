@@ -13,6 +13,10 @@ def cycle(n):
 def maxcycle(i,j):
     """gets the maximum cycle between 2 end points inclusive"""
     maxc=0
+
+    if i>j:
+        i,j = j,i
+
     for n in xrange(i,j+1):
         temp=cycle(n)
         if temp>maxc:
